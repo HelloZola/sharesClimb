@@ -20,3 +20,10 @@ def insertMany(fields, rows, sharesCode):
         rows_qus.append(sharesCode)
         rows_qus.append(err)
         db.excuteInsert("question_shares", fields_qus, rows_qus, True)
+
+
+def selectSumLowerShares():
+    dataList = db.select("select sumcount,shares_code from ("
+                         "SELECT SUM(1)as sumcount,shares_code FROM shares_trades GROUP BY shares_code) tem "
+                         "where sumcount<4000 order by shares_code desc")
+    return dataList

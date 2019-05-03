@@ -7,7 +7,7 @@ def getDB():
     # 打开数据库连接
     # 获取文件的当前路径（绝对路径）
     # cur_path = os.path.dirname(os.path.realpath(__file__))
-    cur_path = "E:\workspaceForPython\sharesClimb\config\config.conf"
+    cur_path = "E:\workspaceForPython\sharesClimb\config\mysql.conf"
     # config_path = os.path.join(cur_path, 'config/config.ini')
     conf = configparser.ConfigParser()
     conf.read(cur_path)
@@ -69,6 +69,21 @@ def excuteInsert(tableName, fields, rows, isIgnore):
         cursor.execute(sql, rows)
         # 事务提交
         db.commit()
+    finally:
+        # 关闭数据库连接
+        db.close()
+
+
+def select(sql):
+    # 获取cursor
+    db = getDB()
+    cursor = db.cursor()
+    try:
+        cursor.execute(sql)
+        alldata = cursor.fetchall()
+        return alldata
+    except Exception as err:
+        print(err)
     finally:
         # 关闭数据库连接
         db.close()

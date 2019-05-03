@@ -138,7 +138,7 @@ def noneAlter(str):
 
 
 # 根据股票编码进行拉取
-def pullSharesInfo(sharesCode):
+def pullSharesInfo(sharesCode, intervaSeasons):
     curYear = int(datetime.datetime.now().year)
     month = int(datetime.datetime.now().month)
     curSeason = 4
@@ -178,7 +178,7 @@ def pullSharesInfo(sharesCode):
                 # （这样做的原因是有些股票（如万科A - 2016年6月左右）中间有一段时间是没有数据的）
                 maybeExist = maybeExist + 1
                 print("季度数据不存在:", sharesCode, maybeExist)
-                if maybeExist > 5:
+                if maybeExist > intervaSeasons:
                     isPull = False
                     break
             elif result == 2:
@@ -205,9 +205,13 @@ def requestpage(URL_GET, param, sharesCode, year, season):
 
 
 # 1.获取股票代码  - 休息重试模式
-def startX():
+def startX(intervaSeasons):
+    # 允许中断数据的季度数
+    if intervaSeasons is None:
+        intervaSeasons = 5
+
     # 已经拉取过的股票编码开头,方便手动控制，不必每次都从头开始拉取
-    alreadyStartHead = "000049"
+    alreadyStartHead = "000488"
 
     starttime = datetime.datetime.now()  ##开始时间
     sharesHeads = ['000', '002', '300', '600', '601', '603']
@@ -224,14 +228,26 @@ def startX():
                     print("股票已经拉起，跳过：", sharesCode)
                     count = 1 + count
                     continue
-            pullSharesInfo(sharesCode)
+            pullSharesInfo(sharesCode, intervaSeasons)
             print("股票编码：" + sharesCode)
             count = 1 + count
+
+        print("休息5分钟")
+        time.sleep(300)
+        print("休息完毕")
 
     endtime = datetime.datetime.now()  ##开始时间
     print("用时（s）：", (endtime - starttime).seconds)
 
 
-##开始拉取
-startX()
+def startPX(intervaSeasons):
+    dataList = SharesDao.selectSumLowerShares()
+    for rec in dataList:
+        print(rec)
+        pullSharesInfo(rec[1], intervaSeasons)
 
+
+##开始拉取
+startX(5)
+##对数据量较少的股票进行重新拉取
+# startPX(10)
