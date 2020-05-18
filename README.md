@@ -1,2 +1,2 @@
 pyhton sharesClimb
-python实现爬虫，获取国家地理官网-五级区域数据（省市区县村居委会）
+python实现爬虫，日常更新网易证券的交易数据
